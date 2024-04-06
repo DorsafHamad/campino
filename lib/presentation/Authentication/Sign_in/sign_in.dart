@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:campino_pfe/presentation/Authentication/Sign_in/components/infoMessage.dart';
 import 'package:campino_pfe/presentation/components/input_field/input_field.dart';
 import 'package:campino_pfe/presentation/on_boarding/on_boarding_controller.dart';
@@ -76,15 +75,51 @@ class _LoginScreenState extends State<SignInScreen> {
       onWillPop: avoidReturnButton,
       child: Scaffold(
           backgroundColor: Colors.white,
-          appBar: AppBar(
-            title: Text('Campino'),
-            backgroundColor: Colors.indigo
-          ),
           body: SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: Form(
                 key: _formkey,
                 child: Column(children: [
+                  Container(
+                    height: 280,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(90),
+                      ),
+                      gradient: LinearGradient(begin: Alignment.topRight, end: Alignment.bottomLeft, colors: [
+                        Colors.blueGrey,
+                        Colors.indigo,
+                      ]),
+                    ),
+                    child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              margin: EdgeInsets.only(top: 50),
+                              child: Image(
+                                image: AssetImage('assets/images/logo.png'),
+                                height: 100,
+                                width: 100,
+                              ),
+                            ),
+                            // SizedBox(height: 10),
+                            Container(
+                              margin: EdgeInsets.only(top: 20),
+                              child: Text(
+                                'Se Connecter ',
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 25,
+                                    //  fontWeight: FontWeight.bold,
+                                    fontStyle: FontStyle.italic),
+                              ),
+                            )
+                          ],
+                        )),
+                  ),
                   Padding(
                     padding: EdgeInsets.only(top: Constants.screenHeight * 0.1),
                     child: InputField(
@@ -106,72 +141,84 @@ class _LoginScreenState extends State<SignInScreen> {
                       color: Colors.indigo,
                     ),
                   ),
-                  TextButton(
-                      onPressed: () {
-                        Get.to(ForgotPassScreen());
-                      },
-                      child: Text(
-                        "mot de passe oublié?",
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                            color: Colors.black54,
-                            //fontWeight: FontWeight.bold,
-                            fontStyle: FontStyle.italic),
-                      )),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20), // Adjust padding as needed
+                    child: Align(
+                      alignment: Alignment.topRight,
+                      child: TextButton(
+                        onPressed: () {
+                          Get.to(ForgotPassScreen());
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 8.0), // Add left padding here
+                          child: Text(
+                            "mot de passe oublié?",
+                            textAlign: TextAlign.left,
+                            style: TextStyle(
+                              color: Colors.black54,
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+
+                  ,
                   SizedBox(
                     height: 20,
                   ),
                   isLoading
                       ? CircularProgressIndicator()
                       : Container(
-                          margin: EdgeInsets.symmetric(horizontal: 20),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                  child: CupertinoButton(
-                                      child:
-                                          Text('Connexion', style: TextStyle(color: Colors.white, fontStyle: FontStyle.italic)),
-                                      color: Colors.indigo,
-                                      onPressed: () {
-                                        if (_formkey.currentState!.validate()) {
+                      margin: EdgeInsets.symmetric(horizontal: 20),
+                      child: Row(
+                        children: [
+                          Expanded(
+                              child: CupertinoButton(
+                                  child:
+                                  Text('Connexion', style: TextStyle(color: Colors.white, fontStyle: FontStyle.italic)),
+                                  color: Colors.indigo,
+                                  onPressed: () {
+                                    if (_formkey.currentState!.validate()) {
+                                      setState(() {
+                                        isLoading = true;
+                                      });
+                                      AuthServices()
+                                          .signIn(emailController.text, passwordController.text)
+                                          .then((value) async {
+                                        if (value) {
                                           setState(() {
-                                            isLoading = true;
+                                            isLoading = false;
                                           });
-                                          AuthServices()
-                                              .signIn(emailController.text, passwordController.text)
-                                              .then((value) async {
-                                            if (value) {
-                                              setState(() {
-                                                isLoading = false;
-                                              });
-                                              AuthServices().getUserData().then((value) {
-                                                AuthServices().saveUserLocally(value);
-                                                if (value.role == 'client') {
-                                                  Navigator.pushNamed(context, AppRouting.homeClient);
-                                                } else if (value.role == 'manager') {
-                                                  Get.toNamed(AppRouting.homeManager);
-                                                } else {
-                                                  Get.toNamed(AppRouting.homeAdmin);
-                                                }
-                                              });
+                                          AuthServices().getUserData().then((value) {
+                                            AuthServices().saveUserLocally(value);
+                                            if (value.role == 'client') {
+                                              Navigator.pushNamed(context, AppRouting.homeClient);
+                                            } else if (value.role == 'manager') {
+                                              Get.toNamed(AppRouting.homeManager);
                                             } else {
-                                              setState(() {
-                                                isLoading = false;
-                                              });
-                                              InfoMessage(
-                                                press: () {
-                                                  Get.back();
-                                                },
-                                                lottieFile: "assets/lotties/error.json",
-                                                action: "Ressayer",
-                                                message: "Merci de vierfier vos données ",
-                                              ).show(context);
+                                              Get.toNamed(AppRouting.homeAdmin);
                                             }
                                           });
+                                        } else {
+                                          setState(() {
+                                            isLoading = false;
+                                          });
+                                          InfoMessage(
+                                            press: () {
+                                              Get.back();
+                                            },
+                                            lottieFile: "assets/lotties/error.json",
+                                            action: "Ressayer",
+                                            message: "Merci de vierfier vos données ",
+                                          ).show(context);
                                         }
-                                      }))
-                            ],
-                          )),
+                                      });
+                                    }
+                                  }))
+                        ],
+                      )),
                   SizedBox(height: 20),
                   Container(
                       margin: EdgeInsets.symmetric(horizontal: 30),
@@ -179,12 +226,12 @@ class _LoginScreenState extends State<SignInScreen> {
                         children: [
                           Expanded(
                               child: TextButton(
-                            child: Text("Besoin d'un nouveau compte?",
-                                style: TextStyle(color: Colors.indigo, fontSize: 14, fontStyle: FontStyle.italic)),
-                            onPressed: () {
-                              Get.to(SignupScreen());
-                            },
-                          ))
+                                child: Text("Besoin d'un nouveau compte?",
+                                    style: TextStyle(color: Colors.indigo, fontSize: 14, fontStyle: FontStyle.italic)),
+                                onPressed: () {
+                                  Get.to(SignupScreen());
+                                },
+                              ))
                         ],
                       )),
                 ])),

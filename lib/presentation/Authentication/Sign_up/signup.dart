@@ -50,8 +50,16 @@ class _SignupScreenState extends State<SignupScreen> {
       child: Scaffold(
           backgroundColor: Colors.white,
           appBar: AppBar(
-              title: Text('Campino'),
-              backgroundColor: Colors.indigo
+            backgroundColor: Colors.indigo,
+            leading: IconButton(
+              icon: Icon(
+                Icons.arrow_back,
+                color: Colors.white, // Set the color to white
+              ),
+              onPressed: () {
+                // Add your onPressed logic here
+              },
+            ),
           ),
           body: SingleChildScrollView(
               scrollDirection: Axis.vertical,

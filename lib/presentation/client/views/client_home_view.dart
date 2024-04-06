@@ -73,17 +73,17 @@ class _BottomNavBarState extends State<HomePageClient> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: WillPopScope(
-        onWillPop: avoidRteurnButton,
-        child: Scaffold(
-            key: _scaffoldKey,
-            backgroundColor: Color(0xffe3eaef),
-            appBar: AppBar(
-                elevation: 0,
-                backgroundColor: Colors.transparent,
-                actions: [
-                  if (currentIndex == 3)
-                    IconButton(
+        child: WillPopScope(
+            onWillPop: avoidRteurnButton,
+            child: Scaffold(
+              key: _scaffoldKey,
+              backgroundColor: Color(0xffe3eaef),
+              appBar: AppBar(
+                  elevation: 1,
+                  backgroundColor: Colors.transparent,
+                  actions: [
+                    currentIndex == 3
+                        ? IconButton(
                         onPressed: () {
                           // Get.to(AllEvenets());
                         },
@@ -91,7 +91,16 @@ class _BottomNavBarState extends State<HomePageClient> {
                           Icons.event,
                           color: Colors.green,
                         ))
-                ],
+                        : Container(),
+                    CircleAvatar(
+                      radius: 27,
+                      backgroundColor: Colors.green,
+                      child: CircleAvatar(
+                        radius: 23,
+                        child: Image.asset("assets/images/avatarr.png"),
+                      ),
+                    )
+                  ],
                 leading: Builder(
                   builder: (BuildContext context) {
                     return IconButton(
@@ -249,33 +258,57 @@ class _BottomNavBarState extends State<HomePageClient> {
                         builder: (context) {
                           return AlertDialog(
                             title: Text("Êtes-vous sure de déconnecter ?"),
-                            actions: [
-                              Container(
+                              actions: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 8.0), // Adjust padding as needed
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.red.withOpacity(0.5),
+                                            borderRadius: BorderRadius.circular(20),
+                                          ),
+                                          child: TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text(
+                                              "Non",
+                                              style: TextStyle(color: Colors.white),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(width: 8), // Add some space between the buttons
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 8.0), // Adjust padding as needed
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(20),
+                                            color: Colors.green,
+                                          ),
+                                          child: TextButton(
+                                            onPressed: () {
+                                              AuthServices().logOut(context);
+                                            },
+                                            child: Text(
+                                              "Oui",
+                                              style: TextStyle(color: Colors.white),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
 
-                                  decoration: BoxDecoration(
-                                      color: Colors.red.withOpacity(0.5), borderRadius: BorderRadius.circular(20)),
-                                  child: TextButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                      child: Text(
-                                          "Non",
-                                          style: TextStyle(color:  Colors.white),
-                                  ))),
-                              Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
-                                    color: Colors.green,
-                                  ),
-                                  child: TextButton(
-                                      onPressed: () {
-                                        AuthServices().logOut(context);
-                                      },
-                                      child: Text(
-                                        "Oui",
-                                        style: TextStyle(color: Colors.white),
-                                      ))),
-                            ],
+
+
+
                           );
                         });
                   },
