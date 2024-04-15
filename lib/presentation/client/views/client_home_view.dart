@@ -137,6 +137,7 @@ class _BottomNavBarState extends State<HomePageClient> {
           color: Color(0xffe3eaef),
         ),
         child: Stack(
+
           alignment: Alignment.topRight,
           children: [
             Container(
